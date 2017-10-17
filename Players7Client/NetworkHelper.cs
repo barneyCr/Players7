@@ -20,7 +20,10 @@ namespace Players7Client
         static byte[] AccessDeniedPacket = new byte[] { 2, 18, 32, 8 };
 
         static ASCIIEncoding enc = new ASCIIEncoding();
+        public static ASCIIEncoding Encoding { get { return NetworkHelper.enc; } }
+    
         #endregion
+
 
         public NetworkHelper(string ip, int port, string username, string password, WriteLogDelegate callbackMethod)
         {
@@ -179,8 +182,55 @@ namespace Players7Client
         {
             p.Seek(+1);
             // in ignore1.txt
+            if (p.Header == "")
+            {
+                return;
+            }
+            else if (p.Header == "1") // INIT 
+            {
+                int myUID = this.UID = p.ReadInt();
+                string myName = this.Username = p.ReadString();
+                Player.Me = new Player(myUID, myName);
+                Player.All.Add(myUID, Player.Me);
+                // maybe more
+            }
+            else if (p.Header == "31") // NEW CONNECTED
+            {
+                int id = p.ReadInt();
+                string name = p.ReadString();
+                if (!Player.All.ContainsKey(id))
+                    Player.All.Add(id, new Player(id, name));
+                // todo Form.AnnounceConnection
+            }
+			else if (p.Header == "29") // ADD PREVIOUSLY CONNECTED PLAYER
+			{
+				int id = p.ReadInt();
+				if (!Player.All.ContainsKey(id))
+					Player.All.Add(id, new Player(id, p.ReadString()));
+			}
+            else if (p.Header == "3") // BROADCAST
+            {
+                //todo
+            }
+            else if (p.Header == "4") // ADMIN MESSAGE
+            {
+                //todo
+            }
+            else if(p.Header == "12") // CLIENT DISCONNECTED 
+            {
+                int uid = p.ReadInt() ^ 0x50;
+                // todo Form.AnnounceDisconnection
+                Player.All.Remove(uid);
+            }
+            else if (p.Header == "-1") // kicked!
+            {
+				this.ConnectionLost = null; // do not reconnect!
+				this.Kicked = true;
+				//this.Form.WriteLog("You have been kicked from the server. Retry connecting in a few minutes.");
+				await Task.Delay(5000);
+				Environment.Exit(-1);
+            }
         }
-
         // todo this throws an exception when authmethod = invitecode
         // when the client tries to reconnect and finally finds the server,
         // it throws InvalidOperationException

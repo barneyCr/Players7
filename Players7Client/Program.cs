@@ -8,6 +8,8 @@ namespace Players7Client
 {
     static class Program
     {
+        public static Action Callback = null;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>

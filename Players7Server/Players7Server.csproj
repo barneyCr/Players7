@@ -52,7 +52,6 @@
     <Compile Include="Properties\Resources.Designer.cs" />
     <Compile Include="Networking\Packet.cs" />
     <Compile Include="GameLogic\Game.cs" />
-    <Compile Include="GameLogic\Player.cs" />
     <Compile Include="GameLogic\CardPack.cs" />
     <Compile Include="GameLogic\Rewards.cs" />
     <Compile Include="Networking\IPacketData.cs" />

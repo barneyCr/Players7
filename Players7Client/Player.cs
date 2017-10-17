@@ -8,6 +8,7 @@ namespace Players7Client
         {
             All = new Dictionary<int, Player>(25);
         }
+        public static Player Me;
 
         public Player(int id, string p)
         {

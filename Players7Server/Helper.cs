@@ -90,6 +90,7 @@ namespace Players7Server
 		{
 			return int.Parse(s);
 		}
+
 		/// <summary>
 		/// Returns the header of the packet
 		/// </summary>
