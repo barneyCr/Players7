@@ -1,0 +1,7 @@
+﻿Gavris cumpara 5 credite cu 6 lei => 5 credite pt gavris
+George cumpara 15 credite cu 17 lei => 15 credite pt george
+30 -> 33
+
+Gavris castiga 2 credite, George pierde 2
+Gavris scoate 2 credite => 2 lei pt gavris
+
