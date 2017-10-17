@@ -1,0 +1,86 @@
+﻿#region ignore
+            /*
+            if (p.Header == "")
+            {
+                return;
+            }
+            if (p.Header == "34") // msg
+            {
+                int senderUID = p.ReadInt() ^ 0x121;
+                Form.WriteInChat(Player.All[senderUID].Username, senderUID, p.ReadString());
+            }
+            else if (p.Header == "1") // INIT
+            {
+                int myUid = this.UID = p.ReadInt();
+                string name = this.Username = p.ReadString();
+                Player.All.Add(myUid, new Player(myUid, name));
+            }
+            else if (p.Header == "31") // new connected
+            {
+                int id = p.ReadInt();
+                string name = p.ReadString();
+                if (!Player.All.ContainsKey(id))
+                    Player.All.Add(id, new Player(id, name));
+                Form.AnnounceDisConnection(name, id, conn: true);
+            }
+            else if (p.Header == "29") // prev
+            {
+                int id = p.ReadInt();
+                if (!Player.All.ContainsKey(id))
+                    Player.All.Add(id, new Player(id, p.ReadString()));
+            }
+            else if (p.Header == "3") // broadcast
+            {
+                if (this.Form != null)
+                    this.Form.WriteLog("System >> " + p.ReadString(), Color.Red);
+            }
+            else if (p.Header == "4") // admin message, different from broadcasting because it can be sent to specific people only
+            {
+                this.Form.WriteLog("Admin:" + p.ReadString(), Color.Red);
+            }
+            else if (p.Header == "12") // client disconnected
+            {
+                int uid = p.ReadInt() ^ 0x50;
+                Form.AnnounceDisConnection(Player.All[uid].Username, uid, conn: false);
+                Player.All.Remove(uid);
+            }
+            else if (p.Header == "37") // received whisper
+            {
+                int senderId = p.ReadInt();
+                string message = p.ReadString();
+                this.Form.ReceivedWhisper(senderId, message);
+            }
+            else if (p.Header == "38") // the whisper i wanted to send was sent (confirmation from server)
+            {
+                this.Form.SentWhisper(p.ReadInt(), p.ReadString());
+            }
+            else if (p.Header == "-38") // whisper couldn't be sent
+            {
+                this.Form.WriteLog("The user you are trying to reach is not online.", settings.SystemMessage);
+            }
+            else if (p.Header == "42") // changed username
+            {
+                int uidOfChanger = p.ReadInt();
+                string newUsername = p.ReadString();
+                Player changer = Player.All[uidOfChanger];
+                if (changer.UserID == this.UID)
+                {
+                    this.Username = newUsername;
+                    Form.WriteLog("Success: changed username to " + newUsername, settings.SystemMessage);
+                }
+                else
+                {
+                    Form.WriteLog(changer.Username + "[" + changer.UserID + "] changed username to " + newUsername);
+                }
+                changer.Username = newUsername;
+            }
+            else if (p.Header == "-1") // kicked !
+            {
+                this.ConnectionLost = null; // do not reconnect
+                this.Kicked = true;
+                this.Form.WriteLog("You have been kicked from the server. Retry connecting in a few minutes.");
+                await Task.Delay(5000);
+                Environment.Exit(-1);
+            }
+             */
+            #endregion

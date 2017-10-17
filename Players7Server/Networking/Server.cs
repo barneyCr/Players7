@@ -378,7 +378,8 @@ namespace Players7Server.Networking
             else if (p.Header == Enums.HeaderTypes.GAME_JOIN_REQUEST) // GAME_JOIN_REQUEST|ids
             {
                 // 103|adsghf
-                if (Program.Games.TryGetValue(p.ReadString(), out Game game))
+                Game game;
+                if (Program.Games.TryGetValue(p.ReadString(), out game))
                 {
                     if (game.CanAddPlayers)
                     {
