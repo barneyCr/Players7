@@ -408,7 +408,7 @@ namespace Players7Server.Networking
                 {
                     byte val = p.ReadByte();
                     byte type = p.ReadByte();
-                    sender.CurrentGame.HandlePutCard(sender, val, type);
+                    sender.CurrentGame.HandlePutCardCommand(sender, val, type);
                 }
             }
         }

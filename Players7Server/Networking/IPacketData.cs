@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Players7Server
+namespace Players7Server.Networking
 {
     public interface IPacketData
     {

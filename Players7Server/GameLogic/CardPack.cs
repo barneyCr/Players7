@@ -6,13 +6,13 @@ using System.Linq;
 namespace Players7Server.GameLogic
 {
     
-    public sealed class CardPack : IEnumerable<Card>, IPacketData
+    public sealed class CardPack : IEnumerable<Card>, Networking.IPacketData
     {
-        private Queue<Card> Cards;
+        private Stack<Card> Cards;
 
         public CardPack()
         {
-            Cards = new Queue<Card>(52);
+            Cards = new Stack<Card>(52);
         }
 
         public void Initialize() 
@@ -24,13 +24,13 @@ namespace Players7Server.GameLogic
 				byte val = (byte)((i % 13) + 2);
 				c.Type = (CardType)type;
 				c.Value = (CardValue)val;
-                Cards.Enqueue(c);
+                Cards.Push(c);
 			}
         }
         public void Shuffle()
         {
             lock (Cards)
-                Cards = new Queue<Card>(Cards.OrderBy(x => Helper.Randomizer.Next()));
+                Cards = new Stack<Card>(Cards.OrderBy(x => Helper.Randomizer.Next()));
         }
 
         public Card Pop()
@@ -42,7 +42,17 @@ namespace Players7Server.GameLogic
                     Program.Write(Enums.LogMessageType.Error, "Card pack already empty");
                     return default(Card);
                 }
-                return Cards.Dequeue();
+                return Cards.Pop();
+            }
+        }
+
+        public Card Peek() {
+            lock (Cards) {
+                if (Cards.Count == 0) {
+					Program.Write(Enums.LogMessageType.Error, "Card pack already empty");
+					return default(Card);
+                }
+                return Cards.Peek();
             }
         }
 
@@ -56,7 +66,7 @@ namespace Players7Server.GameLogic
 				}
 
                 //Card ret = Cards.SingleOrDefault(x=>x==c);
-                Cards = new Queue<Card>(Cards.Where(x=>x!=c));
+                this.Cards = new Stack<Card>(Cards.Where(x=>x!=c));
                 return c;
 			}
         }
@@ -69,7 +79,7 @@ namespace Players7Server.GameLogic
                 {
                     Program.Write(Enums.LogMessageType.Error, "Cannot add more than 52 cards");
                 }
-                Cards.Enqueue(c);
+                Cards.Push(c);
             }
         }
 
@@ -114,6 +124,12 @@ namespace Players7Server.GameLogic
             Value = (CardValue)val;
         }
 
+        public bool Umflator {
+            get {
+                return this.Value == CardValue.Two || this.Value == CardValue.JCard;
+            }
+        }
+
         public static bool operator ==(Card c1, Card c2) {
             return c1.Type == c2.Type && c1.Value == c2.Value;
         }
@@ -126,6 +142,19 @@ namespace Players7Server.GameLogic
         public override string ToString()
         {
             return string.Format("{0} of {1}", (int)Value, Type.ToString());
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Card) {
+                return (Card)obj == this;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ToString().GetHashCode();
         }
     }
 

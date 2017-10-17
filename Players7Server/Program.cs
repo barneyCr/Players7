@@ -13,6 +13,7 @@ namespace Players7Server
 
         public static void Main(string[] args)
         {
+            /*
             CardPack pack = new CardPack();
             pack.Initialize();
             pack.RemoveCard(new Card() { Type = CardType.Romb, Value = CardValue.Eight });
@@ -20,7 +21,7 @@ namespace Players7Server
             {
                 Console.WriteLine(card.ToString());
             }
-
+*/
 
             Program.Write(LogMessageType.Error, "Hello master!");
 #if RELEASE

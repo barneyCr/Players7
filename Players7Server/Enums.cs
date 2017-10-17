@@ -59,5 +59,7 @@
         public const int GAME_PACK_SHUFFLED = 110;
         public const int GAME_PLAYERS_ALL_ADDED = 111;
         public const int GAME_PLAYER_READY = 112;
+        public const int GAME_CARDS_FLOAT_SET = 113;
+        public const int GAME_PLAYER_FINISHED_PLACE = 114;
 	}
 }

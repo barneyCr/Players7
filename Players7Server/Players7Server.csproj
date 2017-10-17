@@ -16,7 +16,7 @@
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>1</WarningLevel>
     <ExternalConsole>true</ExternalConsole>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
@@ -55,7 +55,7 @@
     <Compile Include="GameLogic\Player.cs" />
     <Compile Include="GameLogic\CardPack.cs" />
     <Compile Include="GameLogic\Rewards.cs" />
-    <Compile Include="IPacketData.cs" />
+    <Compile Include="Networking\IPacketData.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Networking\" />
