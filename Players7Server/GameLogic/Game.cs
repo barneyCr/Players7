@@ -20,6 +20,7 @@ namespace Players7Server.GameLogic
         public int Win { get; private set; }
         public string Name { get; private set; }
         public string GameID { get; private set; }
+        public Client Creator { private get; set; }
         #endregion
 
         #region Packs

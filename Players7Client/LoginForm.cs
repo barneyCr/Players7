@@ -58,7 +58,7 @@ namespace Players7Client
                 if (netcom.Connect())
                 {
                     MessageBox.Show("Successfully connected");
-                    Program.Callback = () => Application.Run(new MainForm(helper));
+                    Program.Callback = () => Application.Run(new MainForm(netcom));
                     await Task.Delay(500);
                     this.Close();
                 }
@@ -75,7 +75,9 @@ namespace Players7Client
 
         void LoginForm_KeyDown(object sender, KeyEventArgs e)
         {
-            throw new NotImplementedException();
+            if (e.KeyCode == Keys.Enter) {
+                button1_Click(sender, e);
+            }
         }
     }
 }

@@ -365,13 +365,14 @@ namespace Players7Server.Networking
                 } while (Program.Games.ContainsKey(ids));
 
                 Game newGame = new Game(pCount, win, name, ids);
+                newGame.Creator = sender;
                 Program.Games.Add(ids, newGame);
 
                 //sender.Send(CreatePacket(HeaderTypes.GAME_ADD_GENERAL_INFO, ids, name, pCount, win));
                 foreach (var client in Connections.Where(c => c.Value.CurrentGame == null))
                 {
-                    client.Value.Send(CreatePacket(HeaderTypes.GAME_ADD_GENERAL_INFO, ids, name, pCount, win));
-                    // 102|adsghf|joc 1|3|1
+                    client.Value.Send(CreatePacket(HeaderTypes.GAME_ADD_GENERAL_INFO, ids, name, pCount, win, sender.UserID));
+                    // 102|adsghf|joc 1|3|1|UID
                 }
                 //done(todo_) send to others?
             }

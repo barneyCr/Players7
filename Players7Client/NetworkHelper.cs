@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Players7Client
 {
     public delegate void WriteLogDelegate(string format, params object[] obj);
-    public class NetworkHelper
+    public partial class NetworkHelper
     {
         #region Static members
         static byte[] NameRequiredPacket = new byte[] { 2, 8, 18, 32 };
