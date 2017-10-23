@@ -121,7 +121,7 @@ namespace Players7Client
                         }
                         else if (buffer.SequenceEqual(AccessDeniedPacket))
                         {
-                            this.WriteLog("Access denied. Wrong password maybe ?");
+                            this.WriteLog("Access denied. Wrong password/invite code maybe ?");
                         }
                         return false;
                     }
@@ -229,7 +229,11 @@ namespace Players7Client
             }
             else if (p.Header == HeaderTypes.GAME_FREEZE_LEVERAGE.ToString())
             {
-
+                this.Form.FreezeLeverageScroller();
+            }
+            else if (p.Header == HeaderTypes.GAME_UNFREEZE_LEVERAGE.ToString()) 
+            {
+                this.Form.UnfreezeLeverageScroller();
             }
             else if (p.Header == "-1") // kicked!
             {

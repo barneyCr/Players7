@@ -210,9 +210,11 @@ namespace Players7Server.Networking
                     return "GAME_PLAYER_FINISHED_PLACE";
                 case "115":
                     return "GAME_SET_LEVERAGE_REQUEST";
-                case "-115":
-                    return "GAME_FREEZE_LEVERAGE";
                 case "116":
+                    return "GAME_FREEZE_LEVERAGE";
+                case"-116":
+                    return "GAME_UNFREEZE_LEVERAGE";
+                case "117":
                     return "GAME_SERVER_SETS_PL_LEVERAGE";
                 default:
                     return "Unknown";
@@ -526,6 +528,26 @@ namespace Players7Server.Networking
                 try { socket.Close(); } catch (SocketException) { }
                 return false;
             }
+        }
+
+        public void Broadcast(string message)
+        {
+            var watch = Stopwatch.StartNew();
+            lock (this.Connections)
+            {
+                foreach (var user in this.Connections.Values)
+                {
+                    user.Send(CreatePacket(HeaderTypes.BROADCAST, message));
+                }
+                Program.Write("Message broadcasted to " + this.Connections.Count + " clients in " + watch.Elapsed.Milliseconds + " ms");
+            }
+            watch.Stop();
+        }
+        public void AdminMessage(string message, int[] ids)
+        {
+            for (int i = 0; i < ids.Length; i++)
+                if (this.Connections.ContainsKey(ids[i]))
+                    this.Connections[ids[i]].Send(CreatePacket(HeaderTypes.SYSTEM_MESSAGE, message));
         }
         internal static void OnError(Client client)
         {

@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace Players7Client
 {
     public partial class NetworkHelper

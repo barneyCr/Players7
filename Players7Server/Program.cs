@@ -6,12 +6,14 @@ using Players7Server.Enums;
 using Players7Server.GameLogic;
 using Players7Server.Networking;
 using System.Linq;
+using System.Threading;
+#pragma warning disable RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
+#pragma warning disable RECS0061 // Warns when a culture-aware 'EndsWith' call is used by default.
 
 namespace Players7Server
 {
     partial class Program
     {
-
         public static void Main(string[] args)
         {
             /*
@@ -24,13 +26,15 @@ namespace Players7Server
             }
 */
 
-            Program.Write(LogMessageType.Error, "Hello master!");
+            Program.Write(LogMessageType.Config, "Hello master!");
 #if RELEASE
             Program.Write(LogMessageType.Auth, "Password?");
             if (Console.ReadLine() != "no") {
                 return;
             }
 #endif
+
+
 
             try
             {
@@ -41,22 +45,266 @@ namespace Players7Server
                 InitializeConsole();
 
                 Server = new Server(Settings["serverPort"], Settings["maxClients"], Parse<AuthMethod>(Settings["authMethod"]), Settings["passKey"]);
-				Server.Go();
+                Server.Go();
                 watch.Stop();
                 Program.Write("Loaded server in " + watch.Elapsed.TotalSeconds.ToString("F2") + " seconds", "Trace");
+                Program.Write(LogMessageType.Config, "{0} commanding server {1}", Settings["serverOwner"], Settings["serverName"]);
 
-				string line = "";
+                string line = "";
                 while ((line = Console.ReadLine()) != "csn")
                 {
-                    if (line.StartsWith("sp|"))
+                    try
                     {
-                        string[] prms = line.Split('|');
-                        Client c; int id;
-                        if (int.TryParse(prms[1], out id))
-                        if (Server.Connections.TryGetValue(id, out c))
+                        if (line == "")
+                        { continue; }
+                        if (line.StartsWith("sp|"))
                         {
-                            c.Send(Packet.CreatePacket(prms.Skip(2).ToArray()));
+                            string[] prms = line.Split('|');
+                            Client c; int id;
+                            if (int.TryParse(prms[1], out id))
+                                if (Server.Connections.TryGetValue(id, out c))
+                                {
+                                    c.Send(Packet.CreatePacket(prms.Skip(2).ToArray()));
+                                    Program.Write(LogMessageType.OK, "Sent!");
+                                }
                         }
+                        else if (line == "get-time")
+                        {
+                            Program.Write(LogMessageType.OK, "");
+                        }
+                        if (line == "clients")
+                        {
+                            int uol = 0;
+                            foreach (var pair in Server.Connections)
+                            {
+                                Console.WriteLine("{0}\t\t-\t\t{1}", pair.Key.ToString().PadRight(20, ' '), pair.Value.Username.PadLeft(10, ' '));
+                                uol++;
+                            }
+                            Console.WriteLine("\n\t>>  {0} users online", uol);
+                        }
+                        else if (line.StartsWith("settings"))
+                        {
+                            if (line.Length == 8)
+                            {
+                                Console.WriteLine("\n>>");
+                                foreach (var pair in Settings)
+                                    Console.WriteLine("\t{0}-{1}", pair.Key.PadRight(20, ' '), pair.Value.ToString().PadLeft(20, ' '));
+                            }
+                            else
+                            {
+                                string spec = line.Substring("settings".Length + 1);
+                                dynamic result;
+                                if (Settings.TryGetValue(spec, out result))
+                                {
+                                    Console.WriteLine(">>  {0}\t-\t{1}", spec, result);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Not found... use \'e\' command for adding");
+                                }
+                            }
+                        }
+                        else if (line == "cls" || line == "clear")
+                            Console.Clear();
+                        else if (line.Length > 2)
+                        {
+                            if (line[1] == ' ')
+                            {
+                                if (line[0] == 'b')
+                                {
+                                    string m = line.Substring(2);
+                                    // buffer max
+                                    if (m.Length < 1000)
+                                    {
+                                        if (line.EndsWith("-last") && !String.IsNullOrWhiteSpace(LastBroadcastedMsg))
+                                            Server.Broadcast(LastBroadcastedMsg);
+                                        else
+                                        {
+                                            Server.Broadcast(m);
+                                            LastBroadcastedMsg = m;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Write(LogMessageType.Error, "Message is too long! Can't be longer than 1000 characters. Message copied to clipboard.");
+                                        System.Windows.Forms.Clipboard.SetText(m);
+                                    }
+                                }
+                                else if (line[0] == 'a')
+                                {
+                                    int[] uids = new String(line.Substring(2).TakeWhile(c => c != ' ' && c != '^').ToArray()).Split(',').Select(s => int.Parse(s)).ToArray();
+                                    Server.AdminMessage(line.Substring(line.IndexOf('^') + 1), uids);
+                                }
+                                else if (line[0] == 'k')
+                                {
+                                    string[] params_ = line.Split(' ');
+
+                                    Client client = Server.Connections[params_[1].ToInt()];
+                                    string endpoint = client.Socket.RemoteEndPoint.ToString().Split(':')[0];
+
+                                    Kick(client, endpoint);
+                                    RemoveBlacklist(endpoint, (params_.Length == 2) ? Settings["defaultBanTime"] : params_[2].ToInt());
+                                }
+                                else if (line[0] == 'e')
+                                {
+                                    string[] data = line.Substring(2).Split('=');
+                                    lock (Settings)
+                                    {
+                                        if (Settings.ContainsKey(data[0]))
+                                        {
+                                            try
+                                            {
+                                                dynamic oldVal = Settings[data[0]];
+                                                //if (oldVal.GetType() == data[1].GetType())
+                                                Console.WriteLine(">>\tChanged: {0}\t=\t{1}", data[0], Settings[data[0]] = data[1]);
+                                                //else
+                                                //    throw new ArgumentException("Wrong data type for " + data[0]);
+                                                if (firstEditOfSettings)
+                                                {
+                                                    Write("Changing settings is unsafe: no type check!", "Warning", ConsoleColor.Red);
+                                                    firstEditOfSettings = false;
+                                                }
+                                            }
+                                            catch (IndexOutOfRangeException)
+                                            {
+                                                Console.WriteLine("Wrong syntax for E (edit) command");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("No such key... add in session memory? 1 = yes");
+                                            if (Console.ReadLine() == "1")
+                                            {
+                                                lock (Settings)
+                                                {
+                                                    AddSmart(data[0], data[1]);
+                                                    Console.WriteLine("Added {0} = {1}", data[0], data[1]);
+                                                }
+                                            }
+                                            else
+                                                Console.WriteLine("Dismissed");
+                                        }
+                                    }
+                                }
+                            }
+                            if (line.StartsWith("udata"))
+                            {
+                                string input = line.Substring(6);
+
+                                int uid; Client val;
+                                if (int.TryParse(input, out uid)) // in: "UID", out: uid (int), OUTPUT: Username
+                                {
+                                    if (Server.Connections.TryGetValue(uid, out val))
+                                        Write("Username: " + val.Username, "Query");
+                                    else
+                                        Write("No client with UID: " + uid);
+                                }
+                                else
+                                {
+                                    val = Server.Connections.ValuesWhere(c => c.Username == input).FirstOrDefault();
+                                    if (val != null)
+                                        Write("UID: " + val.UserID, "Query");
+                                    else
+                                        Write("No client with Username: " + input);
+                                }
+                            }
+                            else if (line.StartsWith("restart"))
+                            {
+                                int delay = 0;
+                                if (line.Length > 7)
+                                {
+                                    delay = int.Parse(line.Substring(8));
+                                }
+                                Write(String.Format("Restarting in {0}...", delay), "Application", ConsoleColor.Blue);
+                                Thread.Sleep(delay);
+                                Process.Start("ChatServer.exe", "-wait 1000");
+                                return;
+                            }
+                            else if (line == "add ic")
+                            {
+                                Console.Write("Expecting invite code: ");
+                                string code = Console.ReadLine();
+                                lock (InviteCodes)
+                                    InviteCodes.Add(code);
+                                Write(LogMessageType.Config, "Added invite code " + code);
+                            }
+                            else if (line.StartsWith("pop ic"))
+                            {
+                                string code;
+                                lock (InviteCodes)
+                                {
+                                    if (InviteCodes.Count != 0)
+                                    {
+                                        code = InviteCodes.First();
+                                    }
+                                    else
+                                    {
+                                        code = Helper.GenerateRandomString(6);
+                                        InviteCodes.Add(code);
+                                    }
+                                }
+                                Console.Write(code);
+
+                                if ((line.Length > 7 && line.Substring(7) == "-nc"))
+                                {
+                                    Console.WriteLine();
+                                }
+                                else
+                                {
+                                    Thread.Sleep(100);
+                                    System.Windows.Forms.Clipboard.SetText(code);
+                                    Console.WriteLine(" -> copied");
+                                }
+                            }
+                            else if (line.StartsWith("del ic"))
+                            {
+                                if (line == "del ic -all")
+                                {
+                                    // delete file
+                                    lock (InviteCodes)
+                                    {
+                                        InviteCodes.Clear();
+                                        File.Delete("invites.txt"); // no cross threading thanks to locking invitecodes everywhere
+                                        Program.Write(LogMessageType.OK, "");
+                                    }
+                                }
+                                else
+                                {
+                                    line = line.Substring(7);
+                                    lock (InviteCodes)
+                                    {
+                                        InviteCodes.Remove(line);
+                                        Program.Write(LogMessageType.OK, "");
+                                    }
+                                }
+                            }
+                            else if (line == "openf")
+                            {  
+                                Process.Start("explorer", Environment.CurrentDirectory);
+                            }
+                            else if (line == "help")
+                            {
+                                Console.WriteLine(Players7Server.Properties.Resources.ConsoleCommandGuide);
+                            }
+                            else if (line == "time")
+                            {
+                                DateTime now = DateTime.Now;
+                                TimeSpan running = (DateTime.Now - Program.TimeServerStarted);
+                                string runningStr = (running.TotalMinutes < 75) ? running.TotalMinutes.ToString("F1") + " min" : running.TotalHours.ToString("F2") + " h";
+
+                                Program.Write(LogMessageType.ServerMessage,
+                                    "Time is {0}, process running for {1} ",
+                                    now.ToLongTimeString(), runningStr);
+                            }
+                            else if (line.StartsWith("vote"))
+                            {
+
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
                     }
                 }
             }
@@ -64,25 +312,34 @@ namespace Players7Server
             {
                 Console.WriteLine(e.Message);
             }
+        }
 
+        private static void RemoveBlacklist(string endpoint, dynamic dynamic)
+        {
+            throw new NotImplementedException();
+        }
 
+        private static void Kick(Client client, string endpoint)
+        {
+            throw new NotImplementedException();
         }
 
         public static Server Server;
 
         public static List<string> InviteCodes = new List<string>(500);
         public static readonly string[] ReservedNames = new[] { "admin", "system", "server", "TODEA" };
+        static string LastBroadcastedMsg = "";
 
         public static Dictionary<string, Game> Games = new Dictionary<string, Game>(7);
 
 		static void InitializeConsole()
 		{
-			Console.Title = "Chat Server";
+            Console.Title = Settings["serverName"];
             //Console.WriteLine(Console.BackgroundColor);
 
             ConsoleColor bckCol = /*Console.BackgroundColor =*/ Parse<ConsoleColor>(Settings["consoleBackColor"]);
 
-            Console.ForegroundColor = bckCol == ConsoleColor.Black ? ConsoleColor.Cyan : ConsoleColor.DarkCyan;
+            Console.ForegroundColor = bckCol == ConsoleColor.Black ? ConsoleColor.Blue : ConsoleColor.DarkCyan;
 
 #if mac
 			Console.SetWindowSize(105, 35);
@@ -100,6 +357,9 @@ namespace Players7Server
         static bool WriteInLogFile;
         const ConsoleColor DefaultColor = ConsoleColor.DarkGray;
         static StreamWriter writer = new StreamWriter("logs.txt", true);
+        static bool firstEditOfSettings=true;
+        static DateTime TimeServerStarted = DateTime.Now;
+
         public static void Write(string msg, string header = "", ConsoleColor color = DefaultColor)
         {
             string msg_ = (!string.IsNullOrWhiteSpace(header) ? (string.Concat(DateTime.Now.ToLongTimeString(), " >>> [", header, "]  ", msg)) : (string.Concat(">>>", "   ", msg)));
@@ -183,6 +443,8 @@ namespace Players7Server
             else return default(T);
         }
 
-#endregion
+        #endregion
     }
 }
+#pragma warning restore RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
+#pragma warning restore RECS0061 // Warns when a culture-aware 'EndsWith' call is used by default.

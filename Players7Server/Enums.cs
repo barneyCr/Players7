@@ -62,8 +62,8 @@
         public const int GAME_CARDS_FLOAT_SET = 113;
         public const int GAME_PLAYER_FINISHED_PLACE = 114;
         public const int GAME_SET_LEVERAGE_REQUEST = 115;
-        public const int GAME_FREEZE_LEVERAGE = -115;
-        public const int GAME_SERVER_SETS_PL_LEVERAGE = 116;
-
+        public const int GAME_FREEZE_LEVERAGE = 116;
+        public const int GAME_UNFREEZE_LEVERAGE = -116;
+        public const int GAME_SERVER_SETS_PL_LEVERAGE = 117;
 	}
 }

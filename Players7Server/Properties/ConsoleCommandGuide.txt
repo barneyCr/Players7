@@ -1,0 +1,26 @@
+﻿
+-------
+
+[argument] = necessary argument
+<argument> = optional argument
+
+"csn" = close server now
+"clients" = returns number of connected clients
+"settings <name>" = returns all settings / <name> = specific setting
+"cls" / "clear " = clears console
+"b [msg] <-last?>" = broadcast message OR resend last broadcasted message
+"a [id1,id2,...]^[msg]" = send msg to all id's in list; '^' is necessary
+"k [id] <time>" = kick user with given ID for <time> seconds
+"e [prop]=[newValue]" = change value of property to newValue OR add new property
+"udata [id]" = gets username for userid OR userid for username
+"restart <time>" = restart server after <time> delay (in ms)
+"add ic" = add invite code
+"pop ic <-nc>" = copy (or create) an invite code; '-nc' means no copy
+"del ic [item]/-all" = delete invite code (or all, including file)
+"openf" = opens windows explorer in server's directory
+
+
+
+----
+
+
