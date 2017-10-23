@@ -17,8 +17,15 @@ namespace Players7Client
         {
             InitializeComponent();
 
+            this.Load += LoginForm_Load;
             this.KeyPreview = true;
             this.KeyDown += LoginForm_KeyDown;
+        }
+
+        void LoginForm_Load(object sender, EventArgs e)
+        {
+            this.nameBox.Text = Program.GlobalSettings.Username;
+            this.ipBox.Text = Program.GlobalSettings.PreferredIP;
         }
 
         /// <summary>
@@ -28,8 +35,8 @@ namespace Players7Client
         {
             try
             {
-                string username = this.textBox1.Text;
-                string ipaddress = this.textBox2.Text;
+                string username = this.nameBox.Text;
+                string ipaddress = this.ipBox.Text;
                 string passCode;
                 if (checkBox1.Checked)
                 {
@@ -51,7 +58,7 @@ namespace Players7Client
                 }
                 else
                 {
-                    passCode = this.textBox3.Text;
+                    passCode = this.ipBox.Text;
                 }
 
                 NetworkHelper netcom = new NetworkHelper(ipaddress, 15432, username, passCode, (s, o) => { MessageBox.Show(string.Format(s, o)); });

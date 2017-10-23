@@ -96,6 +96,11 @@ namespace Players7Client
 			return nxt.ToLower().Equals("true") || nxt.Equals("1");
 		}
 
+        public double ReadDouble()
+        {
+            return double.Parse(_params[++position]);
+        }
+
 		public object[] ReadAllLeft()
 		{
 			return this._params.Skip(position + 1).ToArray();
@@ -114,5 +119,5 @@ namespace Players7Client
 		{
 			this._params = null;
 		}
-	}
+    }
 }

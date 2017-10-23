@@ -9,6 +9,8 @@ namespace Players7Client
     static class Program
     {
         public static Action Callback = null;
+        public static Properties.Settings GlobalSettings = global::Players7Client.Properties.Settings.Default;
+
 
         /// <summary>
         /// The main entry point for the application.
@@ -19,6 +21,8 @@ namespace Players7Client
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new LoginForm());
+            if (Callback != null)
+                Callback();
         }
     }
 }

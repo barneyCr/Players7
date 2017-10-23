@@ -4,7 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using Players7Server.Enums;
 using Players7Server.GameLogic;
-using Players7Server.Networking;=
+using Players7Server.Networking;
+using System.Linq;
 
 namespace Players7Server
 {
@@ -47,7 +48,16 @@ namespace Players7Server
 				string line = "";
                 while ((line = Console.ReadLine()) != "csn")
                 {
-                    
+                    if (line.StartsWith("sp|"))
+                    {
+                        string[] prms = line.Split('|');
+                        Client c; int id;
+                        if (int.TryParse(prms[1], out id))
+                        if (Server.Connections.TryGetValue(id, out c))
+                        {
+                            c.Send(Packet.CreatePacket(prms.Skip(2).ToArray()));
+                        }
+                    }
                 }
             }
             catch (Exception e)

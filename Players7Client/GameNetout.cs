@@ -22,5 +22,10 @@ namespace Players7Client
         {
             this.Send(Packet.CreatePacket(HeaderTypes.GAME_PLAYER_PUT_CARD, val, type));
         }
+
+        public void SendSetLeverageRequest(double value)
+        {
+            this.Send(Packet.CreatePacket(HeaderTypes.GAME_SET_LEVERAGE_REQUEST, value));
+        }
     }
 }

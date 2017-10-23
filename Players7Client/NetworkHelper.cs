@@ -161,7 +161,7 @@ namespace Players7Client
 
                 foreach (var pstr in packetArray)
                 {
-                    using (packet = new Packet(pstr))
+                    using (packet = new Packet(pstr, false))
                     {
                         HandlePacket(packet);
                     }
@@ -208,6 +208,7 @@ namespace Players7Client
 				if (!Player.All.ContainsKey(id))
 					Player.All.Add(id, new Player(id, p.ReadString()));
 			}
+            
             else if (p.Header == "3") // BROADCAST
             {
                 //todo
@@ -221,6 +222,14 @@ namespace Players7Client
                 int uid = p.ReadInt() ^ 0x50;
                 // todo Form.AnnounceDisconnection
                 Player.All.Remove(uid);
+            }
+            else if (p.Header == HeaderTypes.GAME_SERVER_SETS_PL_LEVERAGE.ToString())
+            {
+                Player.Me.MyLeverage.Value = p.ReadDouble();
+            }
+            else if (p.Header == HeaderTypes.GAME_FREEZE_LEVERAGE.ToString())
+            {
+
             }
             else if (p.Header == "-1") // kicked!
             {

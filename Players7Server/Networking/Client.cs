@@ -63,7 +63,7 @@ namespace Players7Server
 			int uid;
             lock (Program.Server.Connections) {
                 do
-                    uid = Helper.Randomizer.Next(70, 50000);
+                    uid = Helper.Randomizer.Next(70, 100);
                 while (Program.Server.Connections.ContainsKey(uid));
             }
             this.UserID = uid;

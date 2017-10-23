@@ -28,31 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.nameBox = new System.Windows.Forms.TextBox();
+            this.pscBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.ipBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // textBox1
+            // nameBox
             // 
-            this.textBox1.Location = new System.Drawing.Point(215, 97);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(202, 30);
-            this.textBox1.TabIndex = 1;
+            this.nameBox.Location = new System.Drawing.Point(215, 97);
+            this.nameBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.nameBox.Name = "nameBox";
+            this.nameBox.Size = new System.Drawing.Size(202, 30);
+            this.nameBox.TabIndex = 1;
             // 
-            // textBox2
+            // pscBox
             // 
-            this.textBox2.Location = new System.Drawing.Point(215, 157);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(202, 30);
-            this.textBox2.TabIndex = 2;
+            this.pscBox.Location = new System.Drawing.Point(215, 157);
+            this.pscBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.pscBox.Name = "pscBox";
+            this.pscBox.Size = new System.Drawing.Size(202, 30);
+            this.pscBox.TabIndex = 2;
             // 
             // label1
             // 
@@ -102,13 +102,13 @@
             this.label3.TabIndex = 7;
             this.label3.Text = "Server address";
             // 
-            // textBox3
+            // ipBox
             // 
-            this.textBox3.Location = new System.Drawing.Point(215, 36);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(202, 30);
-            this.textBox3.TabIndex = 0;
+            this.ipBox.Location = new System.Drawing.Point(215, 36);
+            this.ipBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.ipBox.Name = "ipBox";
+            this.ipBox.Size = new System.Drawing.Size(202, 30);
+            this.ipBox.TabIndex = 0;
             // 
             // LoginForm
             // 
@@ -116,13 +116,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(481, 322);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.ipBox);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.pscBox);
+            this.Controls.Add(this.nameBox);
             this.Font = new System.Drawing.Font("Segoe UI", 12.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "LoginForm";
@@ -134,14 +134,14 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox nameBox;
+        private System.Windows.Forms.TextBox pscBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox ipBox;
     }
 }
 

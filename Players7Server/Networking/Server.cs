@@ -31,7 +31,6 @@ namespace Players7Server.Networking
 
         public bool Listen { get; private set; }
 
-
         public Server(int port, int maxConnections, AuthMethod auth, string password)
         {
             this.maxConnections = maxConnections;
@@ -174,6 +173,47 @@ namespace Players7Server.Networking
                     return "REPORT_USER";
                 case "100":
                     return "REQUEST_SEND_FILE";
+
+                case "101":
+                    return "GAME_CREATE";
+                case "102":
+                    return "GAME_ADD_GENERAL_INFO";
+                case "-102" :
+                    return "GAME_REMOVE";
+                case "103":
+                    return "GAME_JOIN_REQUEST";
+                case "-103":
+                    return "GAME_JOIN_REQUEST_ERROR";
+                case "104":
+                    return "GAME_INSIDE_INFO";
+                case "105":
+                    return "GAME_INIT";
+                case "106":
+                    return "GAME_TURN_OF";
+                case "107":
+                    return "GAME_PLAYER_PUT_CARD";
+                case "-107":
+                    return "GAME_PLAYER_PUT_CARD_ERROR";
+                case "108":
+                    return "GAME_PACK_UPDATE_PutONTABLE";
+                case "109":
+                    return "GAME_PACK_UPDATE_SELF";
+                case "110":
+                    return "GAME_PACK_SHUFFLED";
+                case "111":
+                    return "GAME_PLAYERS_ALL_ADDED";
+                case "112":
+                    return "GAME_PLAYER_READY";
+                case "113":
+                    return "GAME_CARDS_FLOAT_SET";
+                case "114":
+                    return "GAME_PLAYER_FINISHED_PLACE";
+                case "115":
+                    return "GAME_SET_LEVERAGE_REQUEST";
+                case "-115":
+                    return "GAME_FREEZE_LEVERAGE";
+                case "116":
+                    return "GAME_SERVER_SETS_PL_LEVERAGE";
                 default:
                     return "Unknown";
             }
