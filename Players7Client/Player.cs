@@ -22,6 +22,15 @@ namespace Players7Client
         public string Username { get; set; }
         public double Rating { get; set; }
 
+        public static Player GetByUID(int uid ) {
+            Player p;
+            if (All.TryGetValue(uid, out p))
+            {
+                return p;
+            }
+            else return null;
+        }
+
         public static Dictionary<int, Player> All { get; set; }
     }
 }

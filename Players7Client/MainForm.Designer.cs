@@ -81,10 +81,6 @@
             this.playerCapacityDataGridViewTextBoxColumn.HeaderText = "PlayerCapacity";
             this.playerCapacityDataGridViewTextBoxColumn.Name = "playerCapacityDataGridViewTextBoxColumn";
             // 
-            // gameBindingSource
-            // 
-            this.gameBindingSource.DataSource = typeof(Players7Client.Game);
-            // 
             // trackBar1
             // 
             this.trackBar1.Location = new System.Drawing.Point(635, 12);

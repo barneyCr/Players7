@@ -43,10 +43,10 @@ namespace Players7Client
         {
             Player.Me.MyLeverage.ValueChanged += MyLeverage_ValueChanged;
 
-            var bindingSource = new BindingSource();
-            bindingSource.DataSource = GameManager.Games;
-            this.dataGridView1.DataSource = bindingSource;
-            this.dataGridView1.AutoGenerateColumns = true;
+            //var bindingSource = new BindingSource();
+            //bindingSource.DataSource = GameManager.Games;
+            //this.dataGridView1.DataSource = bindingSource;
+            //this.dataGridView1.AutoGenerateColumns = true;
             //GameManager.Games.Add(new Game() { ID = 1, Bet = 1, GameCreator = "admin", PlayerCapacity = 5 });
         }
 

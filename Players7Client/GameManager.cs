@@ -9,9 +9,27 @@ namespace Players7Client
 {
     static public class GameManager
     {
-        public static List<Game> Games = new List<Game>();
-    }
+        public static UIProperty<CardPack> PlayedCardsPack;
+        public static UIProperty<CardPack> PackOnTable;
+        public static UIProperty<CardPack> MyPack;
 
+        public static UIProperty<Player> PlayerOnTurn;
+
+        public static UIProperty<int> CardsFloated;
+
+        static GameManager() {
+            PlayedCardsPack = new UIProperty<CardPack>(new CardPack());
+            PackOnTable = new UIProperty<CardPack>(new CardPack());
+            MyPack = new UIProperty<CardPack>(new CardPack());
+
+            PlayerOnTurn = new UIProperty<Player>(null);
+            CardsFloated = new UIProperty<int>(0);
+        }
+
+
+       // public static List<Game> Games = new List<Game>();
+    }
+    /*
     public class Game
     {
         [DisplayName("Game ID")]
@@ -26,4 +44,5 @@ namespace Players7Client
         [DisplayName("Capacity of players")]
         public int PlayerCapacity { get; set; }
     }
+    */
 }

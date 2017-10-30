@@ -235,6 +235,30 @@ namespace Players7Client
             {
                 this.Form.UnfreezeLeverageScroller();
             }
+            else if (p.Header == HeaderTypes.GAME_PACK_UPDATE_PutONTABLE.ToString()) {
+                GameManager.PlayedCardsPack.Value = new CardPack(ReadPackFromPacket(p.ToString()).ToList());
+            }
+            else if (p.Header == HeaderTypes.GAME_PACK_UPDATE_SELF.ToString()) {
+                GameManager.MyPack.Value = new CardPack(ReadPackFromPacket(p.ToString()).ToList());
+            }
+            else if (p.Header == HeaderTypes.GAME_PACK_SHUFFLED.ToString()) {
+                // todo OnShuffled()
+            }
+            else if (p.Header == HeaderTypes.GAME_TURN_OF.ToString()) {
+                Player player = Player.GetByUID(p.ReadInt());
+                if (player == null) {
+                    throw new Exception("ce naiba");
+                }
+                else {
+                    GameManager.PlayerOnTurn.Value = player;
+                    if (player == Player.Me) {
+                        System.Windows.Forms.MessageBox.Show("e randu tau ba");
+                    }
+                }
+            }
+            else if (p.Header == HeaderTypes.GAME_CARDS_FLOAT_SET.ToString()) {
+                GameManager.CardsFloated.Value = p.ReadInt();
+            }
             else if (p.Header == "-1") // kicked!
             {
 				this.ConnectionLost = null; // do not reconnect!
@@ -244,6 +268,15 @@ namespace Players7Client
 				Environment.Exit(-1);
             }
         }
+
+        IEnumerable<Card> ReadPackFromPacket(string packet) {
+            foreach (var item in packet.Split('|').Skip(1))
+            {
+                string[] data = item.Split('\'');
+                yield return new Card(byte.Parse(data[0]), byte.Parse(data[1]));
+            }
+        }
+
         // todo this throws an exception when authmethod = invitecode
         // when the client tries to reconnect and finally finds the server,
         // it throws InvalidOperationException
