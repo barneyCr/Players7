@@ -14,8 +14,9 @@ namespace Players7Client
         public static UIProperty<CardPack> MyPack;
 
         public static UIProperty<Player> PlayerOnTurn;
-
         public static UIProperty<int> CardsFloated;
+
+        // todo add List of players in current game
 
         static GameManager() {
             PlayedCardsPack = new UIProperty<CardPack>(new CardPack());

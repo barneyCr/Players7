@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SWF = System.Windows.Forms;
 
 namespace Players7Client
 {
@@ -21,7 +22,7 @@ namespace Players7Client
 
         static ASCIIEncoding enc = new ASCIIEncoding();
         public static ASCIIEncoding Encoding { get { return NetworkHelper.enc; } }
-    
+
         #endregion
 
 
@@ -202,13 +203,13 @@ namespace Players7Client
                     Player.All.Add(id, new Player(id, name));
                 // todo Form.AnnounceConnection
             }
-			else if (p.Header == "29") // ADD PREVIOUSLY CONNECTED PLAYER
-			{
-				int id = p.ReadInt();
-				if (!Player.All.ContainsKey(id))
-					Player.All.Add(id, new Player(id, p.ReadString()));
-			}
-            
+            else if (p.Header == "29") // ADD PREVIOUSLY CONNECTED PLAYER
+            {
+                int id = p.ReadInt();
+                if (!Player.All.ContainsKey(id))
+                    Player.All.Add(id, new Player(id, p.ReadString()));
+            }
+
             else if (p.Header == "3") // BROADCAST
             {
                 //todo
@@ -217,7 +218,7 @@ namespace Players7Client
             {
                 //todo
             }
-            else if(p.Header == "12") // CLIENT DISCONNECTED 
+            else if (p.Header == "12") // CLIENT DISCONNECTED 
             {
                 int uid = p.ReadInt() ^ 0x50;
                 // todo Form.AnnounceDisconnection
@@ -231,45 +232,63 @@ namespace Players7Client
             {
                 this.Form.FreezeLeverageScroller();
             }
-            else if (p.Header == HeaderTypes.GAME_UNFREEZE_LEVERAGE.ToString()) 
+            else if (p.Header == HeaderTypes.GAME_UNFREEZE_LEVERAGE.ToString())
             {
                 this.Form.UnfreezeLeverageScroller();
             }
-            else if (p.Header == HeaderTypes.GAME_PACK_UPDATE_PutONTABLE.ToString()) {
+            else if (p.Header == HeaderTypes.GAME_PACK_UPDATE_PutONTABLE.ToString())
+            {
                 GameManager.PlayedCardsPack.Value = new CardPack(ReadPackFromPacket(p.ToString()).ToList());
             }
-            else if (p.Header == HeaderTypes.GAME_PACK_UPDATE_SELF.ToString()) {
+            else if (p.Header == HeaderTypes.GAME_PACK_UPDATE_SELF.ToString())
+            {
                 GameManager.MyPack.Value = new CardPack(ReadPackFromPacket(p.ToString()).ToList());
             }
-            else if (p.Header == HeaderTypes.GAME_PACK_SHUFFLED.ToString()) {
+            else if (p.Header == HeaderTypes.GAME_PACK_SHUFFLED.ToString())
+            {
                 // todo OnShuffled()
             }
-            else if (p.Header == HeaderTypes.GAME_TURN_OF.ToString()) {
+            else if (p.Header == HeaderTypes.GAME_TURN_OF.ToString())
+            {
                 Player player = Player.GetByUID(p.ReadInt());
-                if (player == null) {
+                if (player == null)
+                {
                     throw new Exception("ce naiba");
                 }
-                else {
+                else
+                {
                     GameManager.PlayerOnTurn.Value = player;
-                    if (player == Player.Me) {
-                        System.Windows.Forms.MessageBox.Show("e randu tau ba");
+                    if (player == Player.Me)
+                    {
+                        SWF.MessageBox.Show("e randu tau ba");
                     }
                 }
             }
-            else if (p.Header == HeaderTypes.GAME_CARDS_FLOAT_SET.ToString()) {
+            else if (p.Header == HeaderTypes.GAME_CARDS_FLOAT_SET.ToString())
+            {
                 GameManager.CardsFloated.Value = p.ReadInt();
+            }
+            else if (p.Header == HeaderTypes.GAME_PLAYER_PUT_CARD_ERROR.ToString())
+            {
+                SWF.MessageBox.Show("GAME_PLAYER_PUT_CARD_ERROR");
+            }
+            else if (p.Header == HeaderTypes.GAME_PLAYER_FINISHED_PLACE.ToString())
+            {
+                int uid = p.ReadInt();
+                int place = p.ReadInt();
             }
             else if (p.Header == "-1") // kicked!
             {
-				this.ConnectionLost = null; // do not reconnect!
-				this.Kicked = true;
-				//this.Form.WriteLog("You have been kicked from the server. Retry connecting in a few minutes.");
-				await Task.Delay(5000);
-				Environment.Exit(-1);
+                this.ConnectionLost = null; // do not reconnect!
+                this.Kicked = true;
+                //this.Form.WriteLog("You have been kicked from the server. Retry connecting in a few minutes.");
+                await Task.Delay(5000);
+                Environment.Exit(-1);
             }
         }
 
-        IEnumerable<Card> ReadPackFromPacket(string packet) {
+        IEnumerable<Card> ReadPackFromPacket(string packet)
+        {
             foreach (var item in packet.Split('|').Skip(1))
             {
                 string[] data = item.Split('\'');

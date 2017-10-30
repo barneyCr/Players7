@@ -149,7 +149,13 @@ namespace Players7Server.GameLogic
                 }
             }
             _gameInitialized = true;
-            //todo packet
+            lock (Players) {
+                foreach (var player in Players)
+                {
+                    player.Send(Packet.CreatePacket(HeaderTypes.GAME_INIT, "TODO"));
+                }
+            }
+            //todo packet ^^^^
         }
 
         void SendCardsInfo()
@@ -299,6 +305,7 @@ namespace Players7Server.GameLogic
                             MoveCard(playerPack, PlayedCardsPack, putCard);
                             // END TURN HERE
                             EndTurn();
+                            return;
                         }
                         else if (equivalentValue == CardValue.Queen || equivalentValue == CardValue.King)
                         {
@@ -311,6 +318,7 @@ namespace Players7Server.GameLogic
                             MoveCard(playerPack, PlayedCardsPack, putCard);
                             // END TURN HERE
                             EndTurn();
+                            return;
                         }
 
                         // daca am ajuns aici, inseamna ca nu are sa dea carte 
@@ -326,6 +334,7 @@ namespace Players7Server.GameLogic
                             GiveCardToPlayer(onTop, onTurn);
                         }
                         EndTurn();
+                        return;
                     }
                 }
             }

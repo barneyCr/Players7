@@ -50,7 +50,7 @@ namespace Players7Client
             //GameManager.Games.Add(new Game() { ID = 1, Bet = 1, GameCreator = "admin", PlayerCapacity = 5 });
         }
 
-        void MyLeverage_ValueChanged()
+        void MyLeverage_ValueChanged(string modif)
         {
             this.trackBar1.Value = (int)Player.Me.MyLeverage;
         }
