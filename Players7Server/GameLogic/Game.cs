@@ -35,8 +35,6 @@ namespace Players7Server.GameLogic
         #endregion
         #endregion General
 
-
-
         public Game(int pCount, int win, string name, string id)
         {
             this.Players = new List<Client>(pCount);

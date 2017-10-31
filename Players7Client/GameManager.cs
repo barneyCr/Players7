@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Players7Client
 {
@@ -30,7 +31,7 @@ namespace Players7Client
 
        // public static List<Game> Games = new List<Game>();
     }
-    /*
+    
     public class Game
     {
         [DisplayName("Game ID")]
@@ -44,6 +45,10 @@ namespace Players7Client
 
         [DisplayName("Capacity of players")]
         public int PlayerCapacity { get; set; }
+
+        public string Name { get; set; }
+
+        public Button Btn { get; set; }
     }
-    */
+    
 }

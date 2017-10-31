@@ -64,7 +64,7 @@ namespace Players7Client
                 NetworkHelper netcom = new NetworkHelper(ipaddress, 15432, username, passCode, (s, o) => { MessageBox.Show(string.Format(s, o)); });
                 if (netcom.Connect())
                 {
-                    MessageBox.Show("Successfully connected");
+                    //MessageBox.Show("Successfully connected");
                     Program.Callback = () => Application.Run(new MainForm(netcom));
                     await Task.Delay(500);
                     this.Close();
