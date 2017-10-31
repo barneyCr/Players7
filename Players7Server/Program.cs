@@ -16,6 +16,19 @@ namespace Players7Server
     {
         public static void Main(string[] args)
         {
+            //using (StreamWriter wr = new StreamWriter("rewards.txt"))
+            //{
+            //    for (int i = 0; i < 5; i++)
+            //    {
+            //        for (int j = 1; j < 7; j++)
+            //        {
+            //            wr.Write(Rewards.Rewarding[i][j].ToString().PadLeft(7));
+            //        }
+            //        wr.WriteLine();
+            //    }
+            //}
+
+
             Program.Write(LogMessageType.Config, "Hello master!");
 #if RELEASE
             Program.Write(LogMessageType.Auth, "Password?");

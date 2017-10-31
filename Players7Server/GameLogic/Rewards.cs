@@ -6,7 +6,7 @@ namespace Players7Server.GameLogic
 {
     public sealed class Rewards
     {
-        static float[][] Rewarding;
+        internal static float[][] Rewarding;
         static Rewards()
         {
             Rewarding = new float[][]
