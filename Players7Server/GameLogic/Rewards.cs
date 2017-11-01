@@ -11,11 +11,12 @@ namespace Players7Server.GameLogic
         {
             Rewarding = new float[][]
             {
-                new float[] { 2, 1, -1, 0, 0, 0, 0 },
-                new float[] { 3, 2, -0.5f, -1.5f, 0, 0, 0 },
-                new float[] { 4, 3, -0.6f, -1, -1.4f, 0, 0 },
-                new float[] { 5, 4, -0.7f, -0.9f, -1.1f, -1.3f, 0 },
-                new float[] { 6, 5, -0.75f, -0.85f, -1.0f, -1.1f, -1.3f },
+                new [] { 2, 1, -1, 0, 0, 0, 0, 0f },
+                new [] { 3, 2, -0.5f, -1.5f, 0, 0, 0, 0 },
+                new [] { 4, 3, -0.3f, -1, -1.7f, 0, 0, 0 },
+                new [] { 5, 4, 0, -0.75f, -1.4f, -1.85f, 0, 0 },
+                new [] { 6, 5, 0.35f, -0.5f, -1.1f, -1.65f, -2.1f, 0 },
+                new [] { 7, 6, 0.7f, -0.1f, -0.8f, -1.4f, -1.95f, -2.45f }
             };
         }
 
@@ -24,9 +25,9 @@ namespace Players7Server.GameLogic
         /// with all values equal to 0. As players win, their IDs
         /// complete the vector.
         /// </summary>
-        public Dictionary<int, int> PlayerIDsAndPlaces;
-        public float Win;
-        public Rewards(float win, int[] players)
+        private Dictionary<int, int> PlayerIDsAndPlaces;
+        public double Win;
+        public Rewards(double win, int[] players)
         {
             //players.CopyTo(this.PlayerIDs, 0);
             this.Win = win;
@@ -51,17 +52,26 @@ namespace Players7Server.GameLogic
             return won;
         }
 
-        public void DistributeRewards(int[] winners, out Dictionary<int, float> distribution)
+        public bool HasFinished(int uid) {
+            int val;
+            if (this.PlayerIDsAndPlaces.TryGetValue(uid, out val))
+            {
+                return true;
+            }
+            else return val != 0;
+        }
+
+        public void DistributeRewards(int[] winners, out Dictionary<int, double> distribution)
         {
             int[] wnnPlaces = PlayerIDsAndPlaces.Values.ToArray();
             int[] wnnIDs = PlayerIDsAndPlaces.Keys.ToArray();
             int len = winners.Length;
-            float[] rewards = new float[len];
+            double[] rewards = new double[len];
             for (int i = 0; i < len; i++)
             {
                 rewards[i] = this.Win * Rewards.Rewarding[len - 2][wnnPlaces[i]];
             }
-            distribution = new Dictionary<int, float>();
+            distribution = new Dictionary<int, double>();
             for (int i = 0; i < len; i++)
             {
                 distribution.Add(wnnIDs[i], rewards[i]);

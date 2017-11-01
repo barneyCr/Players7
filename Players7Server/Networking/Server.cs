@@ -178,7 +178,7 @@ namespace Players7Server.Networking
                     return "GAME_CREATE";
                 case "102":
                     return "GAME_ADD_GENERAL_INFO";
-                case "-102" :
+                case "-102":
                     return "GAME_REMOVE";
                 case "103":
                     return "GAME_JOIN_REQUEST";
@@ -212,7 +212,7 @@ namespace Players7Server.Networking
                     return "GAME_SET_LEVERAGE_REQUEST";
                 case "116":
                     return "GAME_FREEZE_LEVERAGE";
-                case"-116":
+                case "-116":
                     return "GAME_UNFREEZE_LEVERAGE";
                 case "117":
                     return "GAME_SERVER_SETS_PL_LEVERAGE";
@@ -343,10 +343,17 @@ namespace Players7Server.Networking
 
         void OnClientDisconnected(Client client)
         {
-            Connections.Remove(client.UserID);
+            if (client.CurrentGame != null)
+            {
+                client.CurrentGame.OnPlayerDisconnects(client);
+                client.CurrentGame = null;
+            }
             lock (Connections)
+            {
+                Connections.Remove(client.UserID);
                 foreach (var user in Connections.Values)
                     user.Send(CreatePacket(12, client.UserID ^ 0x50));
+            }
             Program.Write(string.Format("{0} disconnected [{1}]", client.Username, client.UserID), "Network", ConsoleColor.Gray);
         }
 
@@ -380,16 +387,23 @@ namespace Players7Server.Networking
 
         void HandlePacket(Packet p)
         {
-            p.Seek(+1);
-            var sender = p.Sender;
-            if (LogPackets && p.Header != HeaderTypes.POST_MESSAGE)
-                Program.Write("Received packet of type " + GetHeaderType(p.Header) + ", from " + sender.Username + "[" + sender.UserID + "]", "PacketLogs", ConsoleColor.Blue);
-
-            if (!HandleChatTypePacket(p, sender))
+            try
             {
-                // it is a game packet
+                p.Seek(+1);
+                var sender = p.Sender;
+                if (LogPackets && p.Header != HeaderTypes.POST_MESSAGE)
+                    Program.Write("Received packet of type " + GetHeaderType(p.Header) + ", from " + sender.Username + "[" + sender.UserID + "]", "PacketLogs", ConsoleColor.Blue);
 
-                HandleGamePacket(p, sender);
+                if (!HandleChatTypePacket(p, sender))
+                {
+                    // it is a game packet
+
+                    HandleGamePacket(p, sender);
+                }
+            }
+            catch (Exception e)
+            {
+                throw;
             }
         }
 
@@ -397,18 +411,33 @@ namespace Players7Server.Networking
         {
             if (p.Header == Enums.HeaderTypes.GAME_CREATE) // GAME_CREATE|pCount|win|name
             {
+                if (sender.CurrentGame != null)
+                {
+                    sender.Send(CreatePacket(HeaderTypes.GAME_CREATE_ERROR, "ig"));
+                    return;
+                }
+
                 int pCount = p.ReadInt();
-                int win = p.ReadInt(); // todo
+                double win = p.ReadInt();
                 string name = p.ReadString();
                 string ids;
                 do
                 {
-                    ids = Helper.GenerateRandomString(6);
+                    ids = Helper.GenerateRandomString(4, false);  // 52 ^ 4 = 7.311.616 possibilities
                 } while (Program.Games.ContainsKey(ids));
+
+                int msg;
+                if (!CheckCreateGameParameters(win, pCount, name, out msg))
+                {
+                    sender.Send(CreatePacket(HeaderTypes.GAME_CREATE_ERROR, msg));
+                    return;
+                }
+
 
                 Game newGame = new Game(pCount, win, name, ids);
                 newGame.Creator = sender;
                 Program.Games.Add(ids, newGame);
+                newGame.AddOnePlayer(sender);
 
                 //sender.Send(CreatePacket(HeaderTypes.GAME_ADD_GENERAL_INFO, ids, name, pCount, win));
                 foreach (var client in Connections.Where(c => c.Value.CurrentGame == null))
@@ -455,6 +484,26 @@ namespace Players7Server.Networking
                     sender.CurrentGame.HandlePutCardCommand(sender, val, type);
                 }
             }
+        }
+
+        bool CheckCreateGameParameters(double win, int pCount, string name, out int message)
+        {
+            message = 0;
+            if (pCount < 2 || pCount > 7)
+            {
+                // we cannot allow this!
+                message = HeaderTypes.GAME_CREATE_ERROR_PCOUNT;
+            }
+            else if ((win * 100) % 25 != 0 || win < 0.5)
+            {
+                // we cannot allow this. bets must be in format: 0.5, 0.75, 1.25, 1.75, 2.75...
+                message = HeaderTypes.GAME_CREATE_ERROR_BET;
+            }
+            else if (Program.Games.Values.Any(g => g.Name == name))
+            {
+                message = HeaderTypes.GAME_CREATE_ERROR_NAME;
+            }
+            return message != 0;
         }
 
         private bool HandleChatTypePacket(Packet p, Client sender)

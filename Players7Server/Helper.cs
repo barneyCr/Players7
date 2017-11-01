@@ -40,12 +40,12 @@ namespace Players7Server
 		{
 			return (short)Randomizer.Next(short.MinValue, short.MaxValue);
 		}
-		public static string GenerateRandomString(int length)
+		public static string GenerateRandomString(int length, bool lowerCase)
 		{
 			//length = length > 7 ? 7 : length;
 
-			char[] possible = "abcdefghjkmnpqrstuvwxyz".ToCharArray();
 			StringBuilder s = new StringBuilder(length);
+            char[] possible = lowerCase ? possibleCharactersLowerCase : possibleCharactersAllCase;
 			while (--length >= 0)
 				s.Append(possible[Randomizer.Next(0, possible.Length)]);
 
@@ -115,7 +115,8 @@ namespace Players7Server
 			number %= lowerBound;
 		}
 		private static char[] chars = ",|./@*';\\=".ToCharArray();
-		private static char[] possible = "abcdefghjkmnpqrstuvwxyz".ToCharArray();
+		private static char[] possibleCharactersLowerCase = "abcdefghijkmnopqrstuvwxyz".ToCharArray();
+        private static char[] possibleCharactersAllCase = "abcdefghijkmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
 		public static bool ContainsIllegalCharacters(this string text)
 		{
 			return text.ToCharArray().Intersect(chars).Any();

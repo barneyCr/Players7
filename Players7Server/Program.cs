@@ -255,7 +255,7 @@ namespace Players7Server
                                 }
                                 else
                                 {
-                                    code = Helper.GenerateRandomString(6);
+                                    code = Helper.GenerateRandomString(6, true);
                                     InviteCodes.Add(code);
                                 }
                             }

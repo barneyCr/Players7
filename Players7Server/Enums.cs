@@ -45,6 +45,7 @@
 		public const int REQUEST_SEND_FILE = 100;
 
         public const int GAME_CREATE = 101;  // 101|3|1|joc 1
+        public const int GAME_CREATE_ERROR = -101;
 		public const int GAME_ADD_GENERAL_INFO = 102;
 		public const int GAME_REMOVE = -102;
         public const int GAME_JOIN_REQUEST = 103;
@@ -65,5 +66,11 @@
         public const int GAME_FREEZE_LEVERAGE = 116;
         public const int GAME_UNFREEZE_LEVERAGE = -116;
         public const int GAME_SERVER_SETS_PL_LEVERAGE = 117;
+
+
+
+        public const int GAME_CREATE_ERROR_BET = 1;
+        public const int GAME_CREATE_ERROR_PCOUNT = 2;
+        public const int GAME_CREATE_ERROR_NAME = 3;
 	}
 }

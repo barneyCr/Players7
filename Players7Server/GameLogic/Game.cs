@@ -17,7 +17,7 @@ namespace Players7Server.GameLogic
         public List<Client> Players { get; set; }
         private Rewards RewardManager { get; set; }
         public int PlayerCount { get; private set; }
-        public int Win { get; private set; }
+        public double Win { get; private set; }
         public string Name { get; private set; }
         public string GameID { get; private set; }
         public Client Creator { private get; set; }
@@ -37,7 +37,7 @@ namespace Players7Server.GameLogic
 
 
 
-        public Game(int pCount, int win, string name, string id)
+        public Game(int pCount, double win, string name, string id)
         {
             this.Players = new List<Client>(pCount);
             this.PlayerCount = pCount;
@@ -66,6 +66,11 @@ namespace Players7Server.GameLogic
 
         private bool _playersAdded, _gameInitialized;
 
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="T:Players7Server.GameLogic.Game"/> can add players.
+        /// </summary>
+        /// <value><c>true</c> if can add players; otherwise, <c>false</c>.</value>
         public bool CanAddPlayers
         {
             get
@@ -86,8 +91,14 @@ namespace Players7Server.GameLogic
         }
 
 
-
+        /// <summary>
+        /// The players that are waiting for the capacity to be filled.
+        /// </summary>
         private List<Client> waitingPlayers;
+        /// <summary>
+        /// Adds the one player.
+        /// </summary>
+        /// <param name="pl">the player.</param>
         public void AddOnePlayer(Client pl)
         {
             lock (waitingPlayers)
@@ -107,6 +118,9 @@ namespace Players7Server.GameLogic
             }
         }
 
+        /// <summary>
+        /// Adds the players and calls the event.
+        /// </summary>
         private void AddPlayers()
         {
             this.Players = waitingPlayers.Select(p => p).ToList(); // todo check if needed
@@ -119,6 +133,9 @@ namespace Players7Server.GameLogic
             OnPlayersAdded();
         }
 
+        /// <summary>
+        /// Players were added, sends packet, prepares Readiness dictionary
+        /// </summary>
         void OnPlayersAdded()
         {
             _playersAdded = true;
@@ -130,7 +147,10 @@ namespace Players7Server.GameLogic
             Readiness = new Dictionary<Client, bool>(this.PlayerCount);
         }
 
-        public void InitializeGame()
+        /// <summary>
+        /// Initializes the game if all is ready.
+        /// </summary>
+        private void InitializeGame()
         {
             if (!_playersAdded)
             {
@@ -149,7 +169,8 @@ namespace Players7Server.GameLogic
                 }
             }
             _gameInitialized = true;
-            lock (Players) {
+            lock (Players)
+            {
                 foreach (var player in Players)
                 {
                     player.Send(Packet.CreatePacket(HeaderTypes.GAME_INIT, "TODO"));
@@ -158,6 +179,10 @@ namespace Players7Server.GameLogic
             //todo packet ^^^^
         }
 
+        /// <summary>
+        /// Sends packets to all players with info about last 3 dealt cards
+        /// and self's pack
+        /// </summary>
         void SendCardsInfo()
         {
             CardPack lastPlayed = GetLastPlayedCards(3);
@@ -172,6 +197,9 @@ namespace Players7Server.GameLogic
             // todo packet of all cards in all packs
         }
 
+        /// <summary>
+        /// Shuffles the cards and sends packet
+        /// </summary>
         private void ShuffleCards()
         {
             this.PackOnTable.Shuffle();
@@ -185,6 +213,10 @@ namespace Players7Server.GameLogic
             // don't have any reasons to know what cards are to be dealt
         }
 
+
+        /// <summary>
+        /// Ends the turn, checks if there is a winner and assigns next turn right.
+        /// </summary>
         void EndTurn()
         {
             if (_umflate == 0)
@@ -212,7 +244,8 @@ namespace Players7Server.GameLogic
             {
                 _turn = (PlayerCount - 1 == _turn) ? 0 : _turn + 1;
                 onTurn = Players[_turn];
-            } while (this.RewardManager.PlayerIDsAndPlaces.ContainsKey(onTurn.UserID));
+            } while (this.RewardManager.HasFinished(onTurn.UserID));
+            lock (Players)
             foreach (var player in Players)
             {
                 player.Send(Packet.CreatePacket(HeaderTypes.GAME_TURN_OF, onTurn.UserID));
@@ -276,7 +309,7 @@ namespace Players7Server.GameLogic
         {
             Client onTurn = Players[this._turn];
             if (sender == onTurn)
-            { // todo check this check
+            {   // todo check this check
                 Card putCard = new Card(type, val);
                 CardPack playerPack = this.Packs[onTurn];
                 Card lastCard = PlayedCardsPack.Peek();
@@ -312,7 +345,7 @@ namespace Players7Server.GameLogic
                             equivalentValue = (CardValue)(equivalentValue - 10);
                             //goto checkOnValue; // probably redundant
                         }
-                    //checkOnValue:
+                        //checkOnValue:
                         if (equivalentValue == putCard.Value)
                         {
                             MoveCard(playerPack, PlayedCardsPack, putCard);
@@ -341,6 +374,37 @@ namespace Players7Server.GameLogic
             else
             { // not his turn
                 sender.Send(Packet.CreatePacket(HeaderTypes.GAME_PLAYER_PUT_CARD_ERROR));
+            }
+        }
+
+        internal void OnPlayerDisconnects(Client client)
+        {
+            if (!this._gameInitialized)
+            {
+                if (_playersAdded) {
+                    // this means that all players have joined and they are waiting for 
+                    // each other to send READY
+                    // penalise
+                     
+
+                    // TODO PENALTIES. return?
+                }
+                else return;
+            }
+            if (this.RewardManager.HasFinished(client.UserID)){
+                // he is allowed to leave the game...
+                return;
+            }
+            lock (this.Players)
+            {
+                foreach (var player in this.Players)
+                {
+                    if (player == client && !client.Socket.Connected)
+                    {
+                        continue;
+                    }
+                    // todo
+                }
             }
         }
     }

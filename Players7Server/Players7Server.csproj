@@ -71,10 +71,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\Resources.resx" />
-    <None Include="EmptyTextFile.txt" />
     <None Include="App.config" />
     <None Include="Properties\ConsoleCommandGuide.txt" />
     <None Include="packages.config" />
+    <None Include="Properties\rewards revised 30:10:2017.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="server.ini">
