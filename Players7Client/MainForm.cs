@@ -39,15 +39,58 @@ namespace Players7Client
 				//this.button1.PerformClick();
         }
 
+        public void OnGameAdded(Game g) {
+            DataGridViewRow row = new DataGridViewRow();
+            row.SetValues(g.Name, g.GameCreator, g.PlayerCapacity, g.Bet);
+            this.dataGridView1.Rows.Add(row);
+        }
+
+        static DataTable ConvertListToDataTable(List<Game> gameList)
+        {
+            // New table.
+            DataTable table = new DataTable();
+
+            // Get max columns.
+            int columns = 0;
+            object[][] list = gameList.Select(g => new object[] { g.Name, g.GameCreator, g.PlayerCapacity.ToString(), g.Bet.ToString(), g.Btn }).ToArray();
+            foreach (var array in list) 
+            {
+                if (array.Length > columns)
+                {
+                    columns = array.Length;
+                }
+            }
+            
+            // Add columns.
+            for (int i = 0; i < columns; i++)
+            {
+                table.Columns.Add();
+            }
+            
+
+            // Add rows.
+            foreach (object[] array in list)
+            {
+                DataRow row = table.Rows.Add(array);
+                if (row.ItemArray.Count() == 0)
+                    MessageBox.Show("");
+            }
+
+            return table;
+        }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             Player.Me.MyLeverage.ValueChanged += MyLeverage_ValueChanged;
-
-            //var bindingSource = new BindingSource();
-            //bindingSource.DataSource = GameManager.Games;
-            //this.dataGridView1.DataSource = bindingSource;
-            //this.dataGridView1.AutoGenerateColumns = true;
-            //GameManager.Games.Add(new Game() { ID = 1, Bet = 1, GameCreator = "admin", PlayerCapacity = 5 });
+            List<Game> games = new List<Game>() {
+                new Game () { Name = "game 1", GameCreator= "eu1", Bet = 1, PlayerCapacity = 2, ID=1, Btn = new Button()},
+                new Game () { Name = "game 2", GameCreator= "eu2", Bet = 1, PlayerCapacity = 2, ID=2, Btn = new Button()},
+                new Game () { Name = "game 3", GameCreator= "eu3", Bet = 1, PlayerCapacity = 2, ID=3, Btn = new Button()},
+                new Game () { Name = "game 4", GameCreator= "eu4", Bet = 1, PlayerCapacity = 2, ID=4, Btn = new Button()},
+            };
+            DataTable table = ConvertListToDataTable(games);
+            this.dataGridView1.DataSource=table;
+            dataGridView1.Update();
         }
 
         void MyLeverage_ValueChanged(string modif)
