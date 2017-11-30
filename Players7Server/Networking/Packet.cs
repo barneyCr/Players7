@@ -71,15 +71,24 @@ namespace Players7Server.Networking
 			return uint.Parse(_params[++position]);
 		}
 
-		public ulong ReadULong()
-		{
-			return ulong.Parse(_params[++position]);
-		}
+        public long ReadLong()
+        {
+            return long.Parse(_params[++position]);
+        }
+
+        public ulong ReadULong()
+        {
+            return ulong.Parse(_params[++position]);
+        }
 
 		public ushort ReadUShort()
 		{
 			return ushort.Parse(_params[++position]);
 		}
+
+        public double ReadDouble() {
+            return double.Parse(_params[++position]);
+        }
 
 		public string ReadString()
 		{
@@ -96,6 +105,10 @@ namespace Players7Server.Networking
 			var nxt = _params[++position];
 			return nxt.ToLower().Equals("true") || nxt.Equals("1");
 		}
+
+        public DateTime ReadDateTime() {
+            return DateTime.FromBinary(this.ReadLong());
+        }
 
 		public object[] ReadAllLeft()
 		{

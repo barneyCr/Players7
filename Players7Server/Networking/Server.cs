@@ -602,6 +602,7 @@ namespace Players7Server.Networking
         {
             client.Socket.Close();
             client.ConnectionState = ConnectionState.Offline;
+            Program.Write(LogMessageType.Error, "CLIENT DISCONNECTED WITH ERROR");
         }
 
         #region Byte-based packets

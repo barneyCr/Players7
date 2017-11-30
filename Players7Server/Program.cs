@@ -7,6 +7,9 @@ using Players7Server.GameLogic;
 using Players7Server.Networking;
 using System.Linq;
 using System.Threading;
+
+using NLog;
+
 #pragma warning disable RECS0063 // Warns when a culture-aware 'StartsWith' call is used by default.
 #pragma warning disable RECS0061 // Warns when a culture-aware 'EndsWith' call is used by default.
 
@@ -14,29 +17,11 @@ namespace Players7Server
 {
     partial class Program
     {
+        public static Logger MainLogger = LogManager.GetCurrentClassLogger();
+
         public static void Main(string[] args)
         {
-            //using (StreamWriter wr = new StreamWriter("rewards.txt"))
-            //{
-            //    for (int i = 0; i < 5; i++)
-            //    {
-            //        for (int j = 1; j < 7; j++)
-            //        {
-            //            wr.Write(Rewards.Rewarding[i][j].ToString().PadLeft(7));
-            //        }
-            //        wr.WriteLine();
-            //    }
-            //}
-
-
             Program.Write(LogMessageType.Config, "Hello master!");
-#if RELEASE
-            Program.Write(LogMessageType.Auth, "Password?");
-            if (Console.ReadLine() != "no") {
-                return;
-            }
-#endif
-
             try
             {
                 var watch = Stopwatch.StartNew();
@@ -45,6 +30,7 @@ namespace Players7Server
                 LoadInvitesCodes(false);
                 WriteInLogFile = Settings["writeInFile"];
                 InitializeConsole();
+
 
                 Server = new Server(Settings["serverPort"], Settings["maxClients"], Parse<AuthMethod>(Settings["authMethod"]), Settings["passKey"]);
                 Server.Go();
@@ -60,6 +46,7 @@ namespace Players7Server
             }
             catch (Exception e)
             {
+                MainLogger.Fatal(e.Message);
                 Console.WriteLine(e.Message);
             }
         }
@@ -349,7 +336,6 @@ namespace Players7Server
 		static void InitializeConsole()
 		{
             Console.Title = Settings["serverName"];
-            Console.WriteLine(Console.ForegroundColor);
 
             ConsoleColor bckCol = /*Console.BackgroundColor =*/ Parse<ConsoleColor>(Settings["consoleBackColor"]);
 
@@ -393,6 +379,7 @@ namespace Players7Server
         {
             string head = GetEnum(type);
             msg = string.Format(msg, obj);
+            MainLogger.Log(LogLevel.Info, "[{0}] - {1}", head, msg);
             switch (type)
             {
                 case LogMessageType.Config:

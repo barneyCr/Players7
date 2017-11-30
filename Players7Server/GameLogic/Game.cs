@@ -35,13 +35,7 @@ namespace Players7Server.GameLogic
         #endregion
         #endregion General
 
-<<<<<<< HEAD
-
-
         public Game(int pCount, double win, string name, string id)
-=======
-        public Game(int pCount, int win, string name, string id)
->>>>>>> origin/master
         {
             this.Players = new List<Client>(pCount);
             this.PlayerCount = pCount;

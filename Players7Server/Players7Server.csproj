@@ -48,6 +48,9 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -63,18 +66,24 @@
     <Compile Include="GameLogic\CardPack.cs" />
     <Compile Include="GameLogic\Rewards.cs" />
     <Compile Include="Networking\IPacketData.cs" />
+    <Compile Include="Data\IDatabase.cs" />
+    <Compile Include="Data\DataFileLoader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Networking\" />
     <Folder Include="GameLogic\" />
     <Folder Include="import_lang\" />
+    <Folder Include="Data\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\Resources.resx" />
     <None Include="App.config" />
     <None Include="Properties\ConsoleCommandGuide.txt" />
     <None Include="packages.config" />
-    <None Include="Properties\rewards revised 30:10:2017.txt" />
+    <None Include="Properties\rewards revised 30-10-2017.txt" />
+    <None Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="server.ini">
